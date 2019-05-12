@@ -20,7 +20,4 @@ public class BookEntity {
     @Column(name = "isbn")
     String isbn;
 
-    @Column(name = "title")
-    String title;
-
 }
