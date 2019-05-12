@@ -3,10 +3,7 @@ package jantoni1.librarybackend.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -16,6 +13,8 @@ public class BookEntity {
 
     @Id
     @Column(name = "id")
+    @SequenceGenerator(name = "book_sequence", sequenceName = "book_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "book_sequence")
     Integer id;
 
     @Column(name = "isbn")
