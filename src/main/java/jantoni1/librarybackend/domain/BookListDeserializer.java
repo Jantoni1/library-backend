@@ -9,34 +9,34 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static jantoni1.librarybackend.constants.Constants.*;
 
-public class BookDeserializer extends StdDeserializer<BookDTO> {
+public class BookListDeserializer extends StdDeserializer<BookListDTO> {
 
 
-    public BookDeserializer() {
+    public BookListDeserializer() {
         this(null);
     }
 
-    public BookDeserializer(Class<?> vc) {
+    public BookListDeserializer(Class<?> vc) {
         super(vc);
     }
 
     @Override
-    public BookDTO deserialize(JsonParser parser, DeserializationContext context) throws IOException {
+    public BookListDTO deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         JsonNode root = parser.getCodec().readTree(parser);
         return StreamSupport
                 .stream(Spliterators.spliteratorUnknownSize(root.fields(), Spliterator.IMMUTABLE), false)
                 .filter(node -> node.getKey().contains(ISBN_KEY_SUBSTRING))
-                .findAny()
-                .map(this::parseBookNode)
-                .orElse(null);
+                .map(this::parseBookNodes)
+                .collect(Collectors.toCollection(BookListDTO::new));
     }
 
-    private BookDTO parseBookNode(Map.Entry<String, JsonNode> bookNode) {
-        return BookDTO.builder()
+    private BookDetailsDTO parseBookNodes(Map.Entry<String, JsonNode> bookNode) {
+        return BookDetailsDTO.builder()
                 .isbn(bookNode.getKey().replace(ISBN_KEY_SUBSTRING, ""))
                 .title(bookNode.getValue().get(TITLE).textValue())
                 .numberOfPages(bookNode.getValue().get(NUMBER_OF_PAGES).intValue())

@@ -1,37 +1,23 @@
 package jantoni1.librarybackend.domain;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jantoni1.librarybackend.model.BookEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@JsonDeserialize(using = BookDeserializer.class)
-@Builder
-public class BookDTO {
+public class BookDTO extends BookDetailsDTO {
 
-    String isbn;
+    String description;
 
-    String title;
+    Date addDate;
 
-    String coverUrl;
-
-    Integer numberOfPages;
-
-    String authors;
-
-    String publishDate;
-
-    String publishers;
-
-    public BookDTO(BookEntity bookEntity) {
-        isbn = bookEntity.getIsbn();
+    public BookDTO(BookEntity bookEntity, BookDetailsDTO bookDetailsDTO) {
+        super(bookDetailsDTO);
+        description = bookEntity.getDescription();
+        addDate = bookEntity.getAddDate();
     }
 
 }
