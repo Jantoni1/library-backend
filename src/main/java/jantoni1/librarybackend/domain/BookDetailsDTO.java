@@ -1,6 +1,5 @@
 package jantoni1.librarybackend.domain;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jantoni1.librarybackend.model.BookEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

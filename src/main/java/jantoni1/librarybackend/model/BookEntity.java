@@ -1,7 +1,6 @@
 package jantoni1.librarybackend.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -10,6 +9,9 @@ import java.util.Date;
 @Setter
 @Table(name = "books")
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class BookEntity {
 
     @Id
@@ -20,11 +22,5 @@ public class BookEntity {
 
     @Column(name = "isbn")
     private String isbn;
-
-    @Column(name = "description")
-    private String description;
-
-    @Column(name = "add_date")
-    private Date addDate;
 
 }

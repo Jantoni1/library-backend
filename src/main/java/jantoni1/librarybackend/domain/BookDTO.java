@@ -1,6 +1,6 @@
 package jantoni1.librarybackend.domain;
 
-import jantoni1.librarybackend.model.BookEntity;
+import jantoni1.librarybackend.model.UserBookEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -14,10 +14,10 @@ public class BookDTO extends BookDetailsDTO {
 
     Date addDate;
 
-    public BookDTO(BookEntity bookEntity, BookDetailsDTO bookDetailsDTO) {
+    public BookDTO(UserBookEntity userBookEntity, BookDetailsDTO bookDetailsDTO) {
         super(bookDetailsDTO);
-        description = bookEntity.getDescription();
-        addDate = bookEntity.getAddDate();
+        description = userBookEntity.getDescription();
+        addDate = userBookEntity.getAddDate();
     }
 
 }

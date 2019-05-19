@@ -4,6 +4,7 @@ import jantoni1.librarybackend.constants.Constants;
 import jantoni1.librarybackend.domain.BookDTO;
 import jantoni1.librarybackend.domain.BookDetailsDTO;
 import jantoni1.librarybackend.domain.BookListDTO;
+import jantoni1.librarybackend.exception.BookException;
 import jantoni1.librarybackend.model.BookEntity;
 import jantoni1.librarybackend.model.UserBookEntity;
 import jantoni1.librarybackend.model.UserEntity;
@@ -61,26 +62,20 @@ public class BookService {
                 .concat("&format=json&jscmd=data");
     }
 
-    public List<BookDTO> getUserBooks(Integer userId) {
-
-        var books = userBookRepository.getAllByUser_Id(userId)
-                .stream()
-                .map(UserBookEntity::getBook)
-                .collect(Collectors.toList());
-
+    private List<BookDTO> getUserBooks(Integer userId) {
+        var books = userBookRepository.getAllByUser_Id(userId);
         return getBooksDetails(books);
-
     }
 
     public List<BookDTO> getLoggedUserBooks() {
         return getUserBooks(UserContext.getUser().getId());
     }
 
-    List<BookDTO> getBooksDetails(List<BookEntity> bookEntities) {
+    List<BookDTO> getBooksDetails(List<UserBookEntity> bookEntities) {
 
         var booksDetails =  Optional.ofNullable(runExternalBooksSearch(bookEntities
                 .stream()
-                .map(BookEntity::getIsbn)
+                .map(userBookEntity -> userBookEntity.getBook().getIsbn())
                 .collect(Collectors.toList())).getBody()).orElseGet(BookListDTO::new)
                 .stream()
                 .collect(Collectors.toMap(
@@ -89,7 +84,7 @@ public class BookService {
                         (book1, book2) -> book1));
 
         return bookEntities.stream()
-                .map(bookEntity -> new BookDTO(bookEntity, booksDetails.get(bookEntity.getIsbn())))
+                .map(userBookEntity -> new BookDTO(userBookEntity, booksDetails.get(userBookEntity.getBook().getIsbn())))
                 .collect(Collectors.toList());
     }
 
@@ -102,7 +97,7 @@ public class BookService {
         var userBook = new UserBookEntity();
         userBook.setBook(book);
         userBook.setUser(user);
-        userBook.setObtainDate(bookDetailsDTO.getObtainDate());
+        userBook.setAddDate(bookDetailsDTO.getObtainDate());
         userBook.setDescription(bookDetailsDTO.getDescription());
         userBookRepository.save(userBook);
     }
@@ -113,5 +108,17 @@ public class BookService {
         return bookRepository.save(bookEntity);
     }
 
+    @Transactional
+    public UserBookEntity addBook(BookDTO bookDTO, UserEntity userEntity) throws BookException {
+        var bookDetails = Optional.of(runSingleBookExternalSearch(bookDTO.getIsbn()))
+                .orElseThrow(() -> new BookException(BookException.Reason.NOT_FOUND));
+        var book = bookRepository.save(BookEntity.builder().isbn(bookDetails.getIsbn()).build());
+        return userBookRepository.save(UserBookEntity.builder()
+                .book(book)
+                .description(bookDTO.getDescription())
+                .addDate(new Date())
+                .user(userEntity)
+                .build());
+    }
 }
 
