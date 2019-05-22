@@ -30,7 +30,6 @@ public class BookListDeserializer extends StdDeserializer<BookListDTO> {
         JsonNode root = parser.getCodec().readTree(parser);
         return StreamSupport
                 .stream(Spliterators.spliteratorUnknownSize(root.fields(), Spliterator.IMMUTABLE), false)
-                .filter(node -> node.getKey().contains(ISBN_KEY_SUBSTRING))
                 .map(this::parseBookNodes)
                 .collect(Collectors.toCollection(BookListDTO::new));
     }
@@ -39,12 +38,26 @@ public class BookListDeserializer extends StdDeserializer<BookListDTO> {
         return BookDetailsDTO.builder()
                 .isbn(bookNode.getKey().replace(ISBN_KEY_SUBSTRING, ""))
                 .title(bookNode.getValue().get(TITLE).textValue())
-                .numberOfPages(bookNode.getValue().get(NUMBER_OF_PAGES).intValue())
+                .numberOfPages(getNumberOfPages(bookNode.getValue()))
                 .publishers(getPublishers(bookNode.getValue()))
                 .coverUrl(getCoverUrl(bookNode.getValue()))
                 .authors(getAuthors(bookNode.getValue()))
-                .publishDate(bookNode.getValue().get(PUBLISH_DATE).textValue())
+                .publishDate(getPublishDate(bookNode.getValue()))
                 .build();
+    }
+
+    private Integer getNumberOfPages(JsonNode bookNode) {
+        if(bookNode.get(NUMBER_OF_PAGES) != null ) {
+            return bookNode.get(NUMBER_OF_PAGES).intValue();
+        }
+        else return null;
+    }
+
+    private String getPublishDate(JsonNode bookNode) {
+        if(bookNode.get(PUBLISH_DATE) != null) {
+            return bookNode.get(PUBLISH_DATE).textValue();
+        }
+        else return null;
     }
 
     private String getPublishers(JsonNode bookNode) {
@@ -57,7 +70,10 @@ public class BookListDeserializer extends StdDeserializer<BookListDTO> {
     }
 
     private String getCoverUrl(JsonNode jsonNode) {
-        return jsonNode.get(COVER).get(LARGE).textValue();
+        if(jsonNode.get(COVER) != null) {
+            return jsonNode.get(COVER).get(LARGE).textValue();
+        }
+        else return "";
     }
 
     private String getAuthors(JsonNode jsonNode) {

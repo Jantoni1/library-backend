@@ -7,11 +7,20 @@ import jantoni1.librarybackend.security.UserContext;
 import jantoni1.librarybackend.service.BookService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.*;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/")
@@ -23,11 +32,6 @@ public class IndexController {
     @Autowired
     public IndexController(BookService bookService) {
         this.bookService = bookService;
-    }
-
-    @GetMapping("/")
-    public String index() {
-        return "Hello there! I'm running.";
     }
 
     @GetMapping("/book")

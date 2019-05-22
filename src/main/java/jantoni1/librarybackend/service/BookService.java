@@ -38,9 +38,7 @@ public class BookService {
     }
 
     public BookDetailsDTO getBook(String isbn) {
-        return bookRepository.findByIsbn(isbn)
-                .map(BookDetailsDTO::new)
-                .orElseGet(() -> runSingleBookExternalSearch(isbn));
+        return runSingleBookExternalSearch(isbn);
     }
 
     private BookDetailsDTO runSingleBookExternalSearch(String isbn) {
@@ -76,6 +74,7 @@ public class BookService {
         var booksDetails =  Optional.ofNullable(runExternalBooksSearch(bookEntities
                 .stream()
                 .map(userBookEntity -> userBookEntity.getBook().getIsbn())
+                .distinct()
                 .collect(Collectors.toList())).getBody()).orElseGet(BookListDTO::new)
                 .stream()
                 .collect(Collectors.toMap(

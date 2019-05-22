@@ -15,8 +15,8 @@ import java.util.Date;
 public class UserBookEntity {
 
     @Id
-    @SequenceGenerator(name = "user_sequence", sequenceName = "user_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_sequence")
+    @SequenceGenerator(name = "user_book_sequence", sequenceName = "user_book_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_book_sequence")
     @Column(name = "id")
     private Integer id;
 
